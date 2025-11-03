@@ -1273,7 +1273,53 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <script>
+        // ============================================
+        // KONFIGURACJA FIREBASE
+        // ============================================
+        // INSTRUKCJA: Wklej tutaj swój obiekt firebaseConfig po utworzeniu projektu
+        // Przykład:
+        // const firebaseConfig = {
+        //   apiKey: "twój-api-key",
+        //   authDomain: "twój-projekt.firebaseapp.com",
+        //   databaseURL: "https://twój-projekt.firebaseio.com",
+        //   projectId: "twój-projekt",
+        //   storageBucket: "twój-projekt.appspot.com",
+        //   messagingSenderId: "123456789",
+        //   appId: "twój-app-id"
+        // };
+        
+        const firebaseConfig = {
+            // WKLEJ TUTAJ SWÓJ FIREBASE CONFIG
+              apiKey: "AIzaSyAfJaH-F5agSCV12QT_KtImxw9i-EALXXM",
+			  authDomain: "pracownia-64888.firebaseapp.com",
+			  projectId: "pracownia-64888",
+			  storageBucket: "pracownia-64888.firebasestorage.app",
+			  messagingSenderId: "101051827649",
+			  appId: "1:101051827649:web:6dcef00fd28aa139865b40",
+			  measurementId: "G-RCC2PZ14C6"
+        };
+
+        // Sprawdź czy Firebase jest skonfigurowany
+        const isFirebaseConfigured = firebaseConfig.apiKey !== "";
+        let database = null;
+
+        if (isFirebaseConfigured) {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                console.log('✅ Firebase połączony');
+            } catch (error) {
+                console.error('❌ Błąd inicjalizacji Firebase:', error);
+            }
+        } else {
+            console.warn('⚠️ Firebase nie skonfigurowany - używam lokalnego zapisu');
+        }
+
         // Stan aplikacji
         let tasks = {};
         let notes = [];
@@ -1281,11 +1327,67 @@
         // Inicjalizacja
         document.addEventListener('DOMContentLoaded', function() {
             initTabs();
-            loadSavedTasks();
+            if (isFirebaseConfigured && database) {
+                initFirebaseSync();
+            } else {
+                loadSavedTasks();
+                loadNotes();
+            }
             initTasks();
-            loadNotes();
             updateProgress();
         });
+
+        // ============================================
+        // SYNCHRONIZACJA FIREBASE
+        // ============================================
+        function initFirebaseSync() {
+            // Nasłuchiwanie zmian zadań
+            database.ref('tasks').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    tasks = data;
+                    // Aktualizuj widok
+                    Object.keys(tasks).forEach(taskId => {
+                        const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
+                        if (taskItem) {
+                            if (tasks[taskId]) {
+                                taskItem.classList.add('completed');
+                                taskItem.querySelector('.task-checkbox').classList.add('checked');
+                            } else {
+                                taskItem.classList.remove('completed');
+                                taskItem.querySelector('.task-checkbox').classList.remove('checked');
+                            }
+                        }
+                    });
+                    updateProgress();
+                }
+            });
+
+            // Nasłuchiwanie zmian notatek
+            database.ref('notes').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    notes = data;
+                    renderNotes();
+                }
+            });
+        }
+
+        function saveToFirebase() {
+            if (!isFirebaseConfigured || !database) {
+                saveToLocalStorage();
+                return;
+            }
+
+            try {
+                database.ref('tasks').set(tasks);
+                database.ref('notes').set(notes);
+            } catch (error) {
+                console.error('Błąd zapisu do Firebase:', error);
+                // Fallback na localStorage
+                saveToLocalStorage();
+            }
+        }
 
         // System zakładek
         function initTabs() {
@@ -1332,7 +1434,7 @@
             }
             
             updateProgress();
-            saveToLocalStorage();
+            saveToFirebase();
         }
 
         function updateProgress() {
@@ -1375,7 +1477,7 @@
             notes.unshift(note);
             noteInput.value = '';
             renderNotes();
-            saveToLocalStorage();
+            saveToFirebase();
         }
 
         function renderNotes() {
