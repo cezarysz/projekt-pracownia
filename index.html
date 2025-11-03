@@ -379,6 +379,156 @@
             color: var(--color-text-secondary);
         }
 
+        .btn-small {
+            padding: 6px 12px;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn-small:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .phase-add-task {
+            background: var(--color-teal-300);
+            margin-left: auto;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .task-item:hover .task-actions {
+            opacity: 1;
+        }
+
+        .btn-edit, .btn-delete {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: var(--color-orange-400);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #e67e22;
+        }
+
+        .btn-delete {
+            background: var(--color-red-400);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--color-surface);
+            padding: var(--space-24);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-card-border);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            margin-bottom: var(--space-16);
+            color: var(--color-text);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-16);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-8);
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--space-8);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            background: var(--color-background);
+            color: var(--color-text);
+            font-size: 0.9rem;
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: var(--space-8);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            background: var(--color-background);
+            color: var(--color-text);
+            font-size: 0.9rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--space-12);
+            justify-content: flex-end;
+            margin-top: var(--space-24);
+        }
+
+        .btn-secondary {
+            padding: var(--space-8) var(--space-16);
+            background: var(--color-border);
+            color: var(--color-text);
+            border: none;
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-text-secondary);
+            color: var(--color-surface);
+        }
+
         .notes-section {
             margin-top: var(--space-24);
         }
@@ -507,6 +657,7 @@
                     <div class="phase-header">
                         <span class="phase-title">FAZA 1: Przygotowanie i Analiza</span>
                         <span class="phase-duration">Miesiące 1-3</span>
+                        <button class="btn-small phase-add-task" data-phase="1">+ Dodaj zadanie</button>
                     </div>
                     <ul class="task-list" data-phase="1">
                         <li class="task-item" data-task-id="1-1">
@@ -514,6 +665,10 @@
                             <div class="task-content">
                                 <div class="task-title">Analiza rynku nieruchomości - wycena sąsiedniej działki</div>
                                 <div class="task-details">Zlecenie wyceny rzeczoznawcy, analiza cen transakcyjnych w okolicy</div>
+                            </div>
+                            <div class="task-actions">
+                                <button class="btn-edit" onclick="editTask('1-1')">✏️</button>
+                                <button class="btn-delete" onclick="deleteTask('1-1')">🗑️</button>
                             </div>
                         </li>
                         <li class="task-item" data-task-id="1-2">
@@ -1329,8 +1484,10 @@
 
         // Stan aplikacji
         let tasks = {};
+        let taskData = {}; // Przechowuje szczegóły zadań (tytuł, opis)
         let notes = [];
         let archivedNotes = [];
+        let taskIdCounter = 1000; // Licznik dla nowych zadań
 
         // Inicjalizacja
         document.addEventListener('DOMContentLoaded', function() {
@@ -1371,6 +1528,15 @@
                 }
             });
 
+            // Nasłuchiwanie zmian danych zadań
+            database.ref('taskData').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    taskData = data;
+                    renderAllTasks();
+                }
+            });
+
             // Nasłuchiwanie zmian notatek
             database.ref('notes').on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -1398,6 +1564,7 @@
 
             try {
                 database.ref('tasks').set(tasks);
+                database.ref('taskData').set(taskData);
                 database.ref('notes').set(notes);
                 database.ref('archivedNotes').set(archivedNotes);
             } catch (error) {
@@ -1585,12 +1752,14 @@
             try {
                 // Próba zapisu do localStorage
                 localStorage.setItem('projectTasks', JSON.stringify(tasks));
+                localStorage.setItem('projectTaskData', JSON.stringify(taskData));
                 localStorage.setItem('projectNotes', JSON.stringify(notes));
                 localStorage.setItem('projectArchivedNotes', JSON.stringify(archivedNotes));
             } catch (e) {
                 console.log('localStorage niedostępny, używam cookies:', e);
                 // Fallback na cookies (max 4KB per cookie)
                 setCookie('projectTasks', JSON.stringify(tasks), 365);
+                setCookie('projectTaskData', JSON.stringify(taskData), 365);
                 setCookie('projectNotes', JSON.stringify(notes), 365);
                 setCookie('projectArchivedNotes', JSON.stringify(archivedNotes), 365);
             }
@@ -1722,10 +1891,256 @@
             }
         }
 
+        // ============================================
+        // ZARZĄDZANIE ZADANIAMI
+        // ============================================
+
+        // Inicjalizacja danych zadań z HTML
+        function initTaskData() {
+            const taskItems = document.querySelectorAll('.task-item');
+            taskItems.forEach(item => {
+                const taskId = item.dataset.taskId;
+                if (!taskData[taskId]) {
+                    const titleEl = item.querySelector('.task-title');
+                    const detailsEl = item.querySelector('.task-details');
+                    taskData[taskId] = {
+                        title: titleEl ? titleEl.textContent : '',
+                        details: detailsEl ? detailsEl.textContent : '',
+                        phase: taskId.split('-')[0]
+                    };
+                }
+            });
+        }
+
+        // Renderowanie wszystkich zadań
+        function renderAllTasks() {
+            const phases = document.querySelectorAll('.task-list');
+            phases.forEach(phaseList => {
+                const phaseNum = phaseList.dataset.phase;
+                const phaseTasks = Object.keys(taskData).filter(id => id.startsWith(phaseNum + '-'));
+                
+                phaseList.innerHTML = phaseTasks.map(taskId => {
+                    const task = taskData[taskId];
+                    const isCompleted = tasks[taskId] || false;
+                    return `
+                        <li class="task-item ${isCompleted ? 'completed' : ''}" data-task-id="${taskId}">
+                            <div class="task-checkbox ${isCompleted ? 'checked' : ''}"></div>
+                            <div class="task-content">
+                                <div class="task-title">${task.title}</div>
+                                <div class="task-details">${task.details}</div>
+                            </div>
+                            <div class="task-actions">
+                                <button class="btn-edit" onclick="editTask('${taskId}')">✏️</button>
+                                <button class="btn-delete" onclick="deleteTask('${taskId}')">🗑️</button>
+                            </div>
+                        </li>
+                    `;
+                }).join('');
+                
+                // Ponownie dodaj event listenery
+                phaseList.querySelectorAll('.task-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        if (e.target.classList.contains('task-checkbox') || e.target.closest('.task-checkbox')) {
+                            const taskId = item.dataset.taskId;
+                            toggleTask(taskId);
+                        }
+                    });
+                });
+            });
+        }
+
+        // Dodawanie nowego zadania
+        function addNewTask(phase) {
+            showTaskModal('add', phase);
+        }
+
+        // Edycja zadania
+        function editTask(taskId) {
+            showTaskModal('edit', null, taskId);
+        }
+
+        // Usuwanie zadania
+        function deleteTask(taskId) {
+            if (confirm('Czy na pewno chcesz usunąć to zadanie?')) {
+                delete tasks[taskId];
+                delete taskData[taskId];
+                renderAllTasks();
+                updateProgress();
+                saveToFirebase();
+            }
+        }
+
+        // Modal do dodawania/edycji zadań
+        function showTaskModal(mode, phase, taskId) {
+            const modal = document.getElementById('taskModal') || createTaskModal();
+            const modalTitle = modal.querySelector('#modalTitle');
+            const titleInput = modal.querySelector('#taskTitleInput');
+            const detailsInput = modal.querySelector('#taskDetailsInput');
+            const saveBtn = modal.querySelector('#saveTaskBtn');
+            
+            if (mode === 'add') {
+                modalTitle.textContent = `Dodaj zadanie - Faza ${phase}`;
+                titleInput.value = '';
+                detailsInput.value = '';
+                saveBtn.onclick = () => saveTask(mode, phase, null);
+            } else if (mode === 'edit') {
+                modalTitle.textContent = 'Edytuj zadanie';
+                const task = taskData[taskId];
+                titleInput.value = task.title;
+                detailsInput.value = task.details;
+                saveBtn.onclick = () => saveTask(mode, null, taskId);
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // Zapisywanie zadania
+        function saveTask(mode, phase, taskId) {
+            const titleInput = document.getElementById('taskTitleInput');
+            const detailsInput = document.getElementById('taskDetailsInput');
+            
+            const title = titleInput.value.trim();
+            const details = detailsInput.value.trim();
+            
+            if (!title) {
+                alert('Tytuł zadania jest wymagany');
+                return;
+            }
+            
+            if (mode === 'add') {
+                // Generuj nowe ID
+                const newTaskId = `${phase}-${taskIdCounter++}`;
+                tasks[newTaskId] = false;
+                taskData[newTaskId] = {
+                    title: title,
+                    details: details,
+                    phase: phase
+                };
+            } else if (mode === 'edit') {
+                taskData[taskId].title = title;
+                taskData[taskId].details = details;
+            }
+            
+            renderAllTasks();
+            updateProgress();
+            saveToFirebase();
+            closeTaskModal();
+        }
+
+        // Tworzenie modala zadań
+        function createTaskModal() {
+            const modal = document.createElement('div');
+            modal.id = 'taskModal';
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h3 id="modalTitle">Dodaj zadanie</h3>
+                    <div class="form-group">
+                        <label class="form-label" for="taskTitleInput">Tytuł zadania:</label>
+                        <input type="text" id="taskTitleInput" class="form-input" placeholder="Np. Analiza rynku nieruchomości">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="taskDetailsInput">Szczegóły zadania:</label>
+                        <textarea id="taskDetailsInput" class="form-textarea" placeholder="Dodatkowe informacje, notatki lub instrukcje do zadania"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="closeTaskModal()">Anuluj</button>
+                        <button class="btn" id="saveTaskBtn">Zapisz</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Zamknij modal przy kliknięciu na tło
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeTaskModal();
+            });
+            
+            return modal;
+        }
+
+        // Zamykanie modala
+        function closeTaskModal() {
+            const modal = document.getElementById('taskModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Dodaj event listenery dla przycisków dodawania zadań
+        function initPhaseButtons() {
+            document.querySelectorAll('.phase-add-task').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const phase = btn.dataset.phase;
+                    addNewTask(phase);
+                });
+            });
+        }
+
+        // Aktualizacja funkcji loadSavedTasks
+        function loadSavedTasksAndData() {
+            try {
+                let savedTasks = null;
+                let savedTaskData = null;
+                
+                // Próba odczytu z localStorage
+                try {
+                    savedTasks = localStorage.getItem('projectTasks');
+                    savedTaskData = localStorage.getItem('projectTaskData');
+                } catch (e) {
+                    // Fallback na cookies
+                    savedTasks = getCookie('projectTasks');
+                    savedTaskData = getCookie('projectTaskData');
+                }
+                
+                if (savedTasks) {
+                    tasks = JSON.parse(savedTasks);
+                }
+                
+                if (savedTaskData) {
+                    taskData = JSON.parse(savedTaskData);
+                }
+                
+                // Jeśli nie ma zapisanych danych zadań, zainicjuj z HTML
+                if (Object.keys(taskData).length === 0) {
+                    initTaskData();
+                }
+                
+                renderAllTasks();
+                
+            } catch (e) {
+                console.log('Błąd wczytywania danych zadań:', e);
+                initTaskData();
+                renderAllTasks();
+            }
+        }
+
+        // Aktualizacja inicjalizacji
+        document.addEventListener('DOMContentLoaded', function() {
+            initTabs();
+            if (isFirebaseConfigured && database) {
+                initFirebaseSync();
+            } else {
+                loadSavedTasksAndData();
+                loadNotes();
+            }
+            initTasks();
+            initPhaseButtons();
+            updateProgress();
+        });
+
         // Enter key w notatkach
         document.addEventListener('keypress', function(e) {
             if (e.target.id === 'noteInput' && e.key === 'Enter' && e.ctrlKey) {
                 addNote();
+            }
+        });
+
+        // Zamknij modal klawiszem Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeTaskModal();
             }
         });
     </script>
