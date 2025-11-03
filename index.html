@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projekt Pracownia - Plan Realizacji</title>
+    <style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: var(--space-24);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: var(--space-24);
+            color: var(--color-text);
+        }
+
+        .tabs {
+            display: flex;
+            gap: var(--space-8);
+            margin-bottom: var(--space-24);
+            border-bottom: 2px solid var(--color-border);
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: var(--space-12) var(--space-24);
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            color: var(--color-text);
+        }
+
+        .tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cards-grid {
+            display: grid;
+            gap: var(--space-16);
+            margin-bottom: var(--space-24);
+        }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: var(--space-16);
+            color: var(--color-text);
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            margin-top: var(--space-24);
+            margin-bottom: var(--space-12);
+            color: var(--color-primary);
+        }
+
+        .phase {
+            margin-bottom: var(--space-32);
+            padding: var(--space-16);
+            background: var(--color-background);
+            border-radius: var(--radius-base);
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .phase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-16);
+            flex-wrap: wrap;
+            gap: var(--space-12);
+        }
+
+        .phase-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .phase-duration {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            padding: 4px 12px;
+            background: var(--color-border);
+            border-radius: 16px;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            padding: var(--space-12);
+            margin-bottom: var(--space-8);
+            background: var(--color-surface);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border);
+            display: flex;
+            gap: var(--space-12);
+            align-items: flex-start;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .task-item:hover {
+            border-color: var(--color-primary);
+            transform: translateX(4px);
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--color-border);
+            border-radius: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+            position: relative;
+        }
+
+        .task-checkbox.checked {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        .task-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            top: -2px;
+            left: 3px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .task-details {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+
+        .budget-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-12);
+            margin-bottom: var(--space-8);
+            background: var(--color-background);
+            border-radius: var(--radius-base);
+        }
+
+        .budget-category {
+            font-weight: 500;
+        }
+
+        .budget-amount {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .budget-total {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-16);
+            margin-top: var(--space-16);
+            background: var(--color-primary);
+            color: white;
+            border-radius: var(--radius-base);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--color-border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: var(--space-32);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -32px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            border: 3px solid var(--color-surface);
+            box-shadow: 0 0 0 3px var(--color-border);
+        }
+
+        .timeline-content {
+            background: var(--color-surface);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border);
+        }
+
+        .timeline-date {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-8);
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: var(--color-border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: var(--space-16) 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-teal-500), var(--color-teal-300));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: width 0.5s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-16);
+            margin-top: var(--space-24);
+        }
+
+        .stat-card {
+            background: var(--color-background);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: var(--space-8);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+        }
+
+        .notes-section {
+            margin-top: var(--space-24);
+        }
+
+        .note-input {
+            width: 100%;
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            background: var(--color-surface);
+            color: var(--color-text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: var(--space-12) var(--space-24);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .note-item {
+            padding: var(--space-12);
+            margin-top: var(--space-8);
+            background: var(--color-background);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .note-date {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: var(--space-16);
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .timeline {
+                padding-left: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Projekt Pracownia - Plan Realizacji</h1>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="overview">Przegląd</button>
+            <button class="tab" data-tab="phases">Fazy Projektu</button>
+            <button class="tab" data-tab="timeline">Oś Czasu</button>
+            <button class="tab" data-tab="budget">Budżet</button>
+            <button class="tab" data-tab="notes">Notatki</button>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <div class="card">
+                <h2>Status Projektu</h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="overallProgress">0%</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="completedTasks">0</div>
+                        <div class="stat-label">Wykonane zadania</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalTasks">54</div>
+                        <div class="stat-label">Wszystkie zadania</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="estimatedTime">24-36</div>
+                        <div class="stat-label">Miesięcy (szacunek)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">450-750</div>
+                        <div class="stat-label">tys. zł (budżet)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Cel Projektu</h2>
+                <p><strong>Wizja:</strong> Stworzenie w pełni wyposażonej pracowni krawieckiej dla Patrycji (Uszyte przez Pati) , umożliwiającej prowadzenie działalności rękodzielniczej oraz warsztatów szwalniczych dla dzieci.</p>
+                
+                <h3>Kluczowe Kroki</h3>
+                <ol style="padding-left: 24px; line-height: 1.8;">
+                    <li><strong>Zakup sąsiedniej nieruchomości</strong> - negocjacje i transakcja</li>
+                    <li><strong>Scalenie działek</strong> - procedura administracyjna w starostwie/gminie</li>
+                    <li><strong>Uzyskanie pozwoleń budowlanych</strong> - dla budynku modułowego</li>
+                    <li><strong>Zakup i instalacja kontenera/modułu</strong> - pracownia krawiecka</li>
+                    <li><strong>Wyposażenie i uruchomienie</strong> - sprzęt, media, aranżacja</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="phases" class="tab-content">
+            <div class="card">
+                <h2>Szczegółowe Fazy Realizacji</h2>
+                
+                <div class="phase">
+                    <div class="phase-header">
+                        <span class="phase-title">FAZA 1: Przygotowanie i Analiza</span>
+                        <span class="phase-duration">Miesiące 1-3</span>
+                    </div>
+                    <ul class="task-list" data-phase="1">
+                        <li class="task-item" data-task-id="1-1">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Analiza rynku nieruchomości - wycena sąsiedniej działki</div>
+                                <div class="task-details">Zlecenie wyceny rzeczoznawcy, analiza cen transakcyjnych w okolicy</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="1-2">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Sprawdzenie stanu prawnego sąsiedniej działki</div>
+                                <div class="task-details">Wypis z księgi wieczystej, sprawdzenie obciążeń, hipoteki</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="1-3">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Weryfikacja miejscowego planu zagospodarowania przestrzennego</div>
+                                <div class="task-details">Sprawdzenie przeznaczenia działek, możliwości zabudowy</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="1-4">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Kontakt z właścicielem sąsiedniej działki - negocjacje wstępne</div>
+                                <div class="task-details">Rozmowa o zamiarze zakupu, ustalenie wstępnych warunków</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="1-5">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Konsultacja z architektem/projektantem</div>
+                                <div class="task-details">Wstępna koncepcja zagospodarowania scalonej działki</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="1-6">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Analiza przepisów dot. budynków modułowych</div>
+                                <div class="task-details">Wymogi prawne, pozwolenia, wielkość obiektu (do 35m² bez pozwolenia przy spełnieniu warunków)</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="1-7">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Przygotowanie budżetu i planu finansowania</div>
+                                <div class="task-details">Wnioski kredytowe, oszczędności, harmonogram wydatków</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-header">
+                        <span class="phase-title">FAZA 2: Zakup Nieruchomości</span>
+                        <span class="phase-duration">Miesiące 4-8</span>
+                    </div>
+                    <ul class="task-list" data-phase="2">
+                        <li class="task-item" data-task-id="2-1">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Finalizacja negocjacji cenowych</div>
+                                <div class="task-details">Ustalenie ostatecznej ceny i warunków transakcji</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="2-2">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Umowa przedwstępna / rezerwacja działki</div>
+                                <div class="task-details">Zabezpieczenie transakcji, wpłata zadatku (zazwyczaj 10%)</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="2-3">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Przygotowanie dokumentów do aktu notarialnego</div>
+                                <div class="task-details">Wypisy, wyrysy, zaświadczenia, dowody tożsamości</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="2-4">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Finalizacja finansowania zakupu</div>
+                                <div class="task-details">Uruchomienie kredytu lub przygotowanie środków własnych</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="2-5">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Podpisanie aktu notarialnego</div>
+                                <div class="task-details">Przeniesienie własności, wpis do księgi wieczystej (2-4 tygodnie)</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="2-6">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Uzyskanie nowego wypisu z księgi wieczystej</div>
+                                <div class="task-details">Potwierdzenie własności, dokument potrzebny do dalszych procedur</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-header">
+                        <span class="phase-title">FAZA 3: Scalenie Działek</span>
+                        <span class="phase-duration">Miesiące 9-14</span>
+                    </div>
+                    <ul class="task-list" data-phase="3">
+                        <li class="task-item" data-task-id="3-1">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Zlecenie mapy geodezyjnej dla obu działek</div>
+                                <div class="task-details">Geodeta - aktualna mapa do 6 miesięcy, koszt ok. 1500-3000 zł</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="3-2">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Przygotowanie projektu scalenia i wtórnego podziału</div>
+                                <div class="task-details">Geodeta przygotowuje projekt scalenia wraz z podziałem (jeśli potrzebny)</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="3-3">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Złożenie wniosku o scalenie działek</div>
+                                <div class="task-details">Starostwo powiatowe lub urząd gminy + załączniki: wypisy, wyrysy, mapa, uzasadnienie</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="3-4">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Oczekiwanie na decyzję administracyjną o scaleniu</div>
+                                <div class="task-details">Procedura 2-6 miesięcy, może być wymagana opinia samorządu</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="3-5">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Uzyskanie pozytywnej decyzji o scaleniu</div>
+                                <div class="task-details">Decyzja ostateczna po upływie terminu odwoławczego (14 dni)</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="3-6">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Aktualizacja ewidencji gruntów i mapy zasadniczej</div>
+                                <div class="task-details">Geodeta wykonuje pomiary i aktualizuje dokumentację</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="3-7">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Założenie nowej księgi wieczystej dla scalonej działki</div>
+                                <div class="task-details">Wpis do księgi wieczystej, koszt ok. 200 zł + termin 2-4 tygodnie</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-header">
+                        <span class="phase-title">FAZA 4: Pozwolenia Budowlane</span>
+                        <span class="phase-duration">Miesiące 15-18</span>
+                    </div>
+                    <ul class="task-list" data-phase="4">
+                        <li class="task-item" data-task-id="4-1">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Wybór dostawcy budynku modułowego/kontenera</div>
+                                <div class="task-details">Porównanie ofert, wizyta w pokazach, analiza parametrów technicznych</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="4-2">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Określenie wielkości i specyfikacji pracowni</div>
+                                <div class="task-details">35m² bez pozwolenia na budowę (wymaga zgłoszenia) lub większy z pozwoleniem</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="4-3">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Zlecenie projektu budowlanego (jeśli obiekt &gt;35m²)</div>
+                                <div class="task-details">Architekt przygotowuje projekt + rzuty, przekroje, elewacje</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="4-4">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Zgłoszenie budowy lub złożenie wniosku o pozwolenie</div>
+                                <div class="task-details">Starostwo powiatowe / urząd gminy - dla obiektów do 35m² zgłoszenie, powyżej - pozwolenie</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="4-5">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Uzyskanie decyzji o warunkach zabudowy (jeśli brak MPZP)</div>
+                                <div class="task-details">WAŻNE: Do końca 2025 uproszczona procedura! Procedura 1-3 miesiące</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="4-6">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Uzyskanie pozwolenia na budowę (jeśli wymagane)</div>
+                                <div class="task-details">Termin: do 65 dni od złożenia wniosku, milczące przyzwolenie po tym terminie</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="4-7">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Uzyskanie warunków przyłączenia mediów</div>
+                                <div class="task-details">Prąd, woda, kanalizacja - wnioski do operatorów sieci</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-header">
+                        <span class="phase-title">FAZA 5: Przygotowanie Terenu</span>
+                        <span class="phase-duration">Miesiące 19-21</span>
+                    </div>
+                    <ul class="task-list" data-phase="5">
+                        <li class="task-item" data-task-id="5-1">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Wytyczenie geodezyjne miejsca pod budynek</div>
+                                <div class="task-details">Geodeta wyznacza dokładną lokalizację obiektu zgodnie z projektem</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="5-2">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Niwelacja i przygotowanie terenu</div>
+                                <div class="task-details">Wyrównanie gruntu, usunięcie roślinności, koparka</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="5-3">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Wykonanie fundamentów lub płyty fundamentowej</div>
+                                <div class="task-details">Fundament pod kontener modułowy - betonowa płyta lub punkty fundamentowe</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="5-4">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Przygotowanie przyłączy mediów</div>
+                                <div class="task-details">Rowy pod kable i rury, wyprowadzenia dla przyłączy</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="5-5">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Przygotowanie dojazdu dla dostawy kontenera</div>
+                                <div class="task-details">Dojazd dla ciężarówki z dźwigiem, wzmocnienie terenu jeśli potrzebne</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-header">
+                        <span class="phase-title">FAZA 6: Dostawa i Instalacja</span>
+                        <span class="phase-duration">Miesiące 22-24</span>
+                    </div>
+                    <ul class="task-list" data-phase="6">
+                        <li class="task-item" data-task-id="6-1">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Finalizacja zamówienia budynku modułowego</div>
+                                <div class="task-details">Potwierdzenie specyfikacji, terminu dostawy, zapłata zaliczki</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="6-2">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Dostawa i montaż kontenera/modułu</div>
+                                <div class="task-details">Transport specjalistyczny + dźwig, montaż w 1-2 dni</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="6-3">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Podłączenie instalacji elektrycznej</div>
+                                <div class="task-details">Elektryk - przyłącze, rozdzielnia, instalacja wewnętrzna</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="6-4">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Podłączenie wody i kanalizacji</div>
+                                <div class="task-details">Hydraulik - przyłącza, instalacje wewnętrzne</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="6-5">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Instalacja ogrzewania/klimatyzacji</div>
+                                <div class="task-details">Klimatyzacja z funkcją grzania lub dodatkowe ogrzewanie elektryczne</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="6-6">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Montaż oświetlenia i instalacji elektrycznych</div>
+                                <div class="task-details">Lampy, gniazdka, wyłączniki - odpowiednia ilość dla maszyn szwalniczych</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="6-7">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Odbiór techniczny instalacji</div>
+                                <div class="task-details">Sprawdzenie działania wszystkich systemów, testy</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-header">
+                        <span class="phase-title">FAZA 7: Wyposażenie Pracowni</span>
+                        <span class="phase-duration">Miesiące 25-27</span>
+                    </div>
+                    <ul class="task-list" data-phase="7">
+                        <li class="task-item" data-task-id="7-1">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Zakup maszyn szwalniczych przemysłowych</div>
+                                <div class="task-details">Minimum: stebnówka, overlock, coverlock - ok. 8000-15000 zł</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="7-2">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Zakup stołów krojczych i manekiny</div>
+                                <div class="task-details">Stoły o odpowiedniej wielkości, manekiny krawiecki różne rozmiary</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="7-3">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Zakup żelazek i stacji prasujących</div>
+                                <div class="task-details">Żelazko przemysłowe lub profesjonalne z generatorem pary</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="7-4">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Systemy przechowywania - regały, szafy, organizery</div>
+                                <div class="task-details">Meble na tkaniny, nici, akcesoria, wykroje</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="7-5">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Zakup narzędzi i akcesoriów krawiecklich</div>
+                                <div class="task-details">Nożyczki, centymetry, kredy, szpilki, igły, nici itp.</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="7-6">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Meble i krzesła dla uczestników warsztatów</div>
+                                <div class="task-details">Stoliki i krzesła dla dzieci, obszar warsztatowy</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="7-7">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Zakup materiałów startowych</div>
+                                <div class="task-details">Zapas tkanin, zamków, guzików, taśm do rozpoczęcia działalności</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="7-8">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Aranżacja wnętrza - wykończenie, dekoracje</div>
+                                <div class="task-details">Zasłony, oświetlenie dekoracyjne, tablice inspiracyjne</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-header">
+                        <span class="phase-title">FAZA 8: Legalizacja Działalności</span>
+                        <span class="phase-duration">Miesiące 28-30</span>
+                    </div>
+                    <ul class="task-list" data-phase="8">
+                        <li class="task-item" data-task-id="8-1">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Rejestracja działalności gospodarczej</div>
+                                <div class="task-details">CEIDG - online, PKD 14.13.Z (krawiectwo), 85.51.Z (warsztaty)</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="8-2">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Wybór formy opodatkowania</div>
+                                <div class="task-details">Podatek liniowy 19%, skala podatkowa lub ryczałt 8,5%</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="8-3">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Zgłoszenie do ZUS</div>
+                                <div class="task-details">Składki zdrowotne i społeczne, możliwość ulgi na start przez 6 miesięcy</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="8-4">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Ubezpieczenie OC działalności</div>
+                                <div class="task-details">Polisa OC dla działalności i prowadzenia warsztatów z dziećmi</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="8-5">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Zgłoszenie zakończenia budowy</div>
+                                <div class="task-details">Urząd gminy/starostwo - zgłoszenie zakończenia robót budowlanych</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="8-6">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Uzyskanie pozwolenia na użytkowanie (jeśli wymagane)</div>
+                                <div class="task-details">Dla obiektów powyżej 35m² - decyzja o pozwoleniu na użytkowanie</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-header">
+                        <span class="phase-title">FAZA 9: Uruchomienie i Marketing</span>
+                        <span class="phase-duration">Miesiące 31-36</span>
+                    </div>
+                    <ul class="task-list" data-phase="9">
+                        <li class="task-item" data-task-id="9-1">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Stworzenie strony internetowej i mediów społecznościowych</div>
+                                <div class="task-details">Facebook, Instagram - prezentacja pracowni i portfolio prac</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="9-2">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Przygotowanie cennika usług i warsztatów</div>
+                                <div class="task-details">Usługi szwalnicze, warsztaty dla dzieci - różne pakiety</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="9-3">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Kampania marketingowa lokalna</div>
+                                <div class="task-details">Ulotki, ogłoszenia lokalne, współpraca ze szkołami i przedszkolami</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="9-4">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Dzień otwarcia / Open House</div>
+                                <div class="task-details">Event promocyjny, pokazy, mini-warsztaty dla dzieci</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="9-5">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Pierwsze zamówienia i warsztaty testowe</div>
+                                <div class="task-details">Rozpoczęcie działalności, zbieranie opinii, doskonalenie oferty</div>
+                            </div>
+                        </li>
+                        <li class="task-item" data-task-id="9-6">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Nawiązanie współpracy z lokalnymi firmami</div>
+                                <div class="task-details">Przedszkola, szkoły, centra kultury - oferta warsztatów</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="timeline" class="tab-content">
+            <div class="card">
+                <h2>Wizualizacja Osi Czasu</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Listopad 2025 - Styczeń 2026</div>
+                            <div class="timeline-title">FAZA 1: Przygotowanie i Analiza</div>
+                            <p>Wycena nieruchomości, analiza prawna, konsultacje z architektami i geodetami. Przygotowanie budżetu i planu finansowania.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Luty - Czerwiec 2026</div>
+                            <div class="timeline-title">FAZA 2: Zakup Nieruchomości</div>
+                            <p>Negocjacje, umowa przedwstępna, finalizacja finansowania i podpisanie aktu notarialnego. Rejestracja w księgach wieczystych.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Lipiec - Grudzień 2026</div>
+                            <div class="timeline-title">FAZA 3: Scalenie Działek</div>
+                            <p>Pomiary geodezyjne, wniosek o scalenie, procedura administracyjna w starostwie. Aktualizacja ewidencji gruntów i założenie nowej księgi wieczystej.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Styczeń - Kwiecień 2027</div>
+                            <div class="timeline-title">FAZA 4: Pozwolenia Budowlane</div>
+                            <p>Wybór dostawcy kontenera, projekt budowlany, zgłoszenie/pozwolenie na budowę. Uzyskanie warunków przyłączenia mediów.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Maj - Lipiec 2027</div>
+                            <div class="timeline-title">FAZA 5: Przygotowanie Terenu</div>
+                            <p>Wytyczenie geodezyjne, niwelacja terenu, wykonanie fundamentów. Przygotowanie przyłączy mediów i dojazdu dla dostawy.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Sierpień - Październik 2027</div>
+                            <div class="timeline-title">FAZA 6: Dostawa i Instalacja</div>
+                            <p>Transport i montaż kontenera modułowego. Podłączenie wszystkich mediów, instalacja ogrzewania i klimatyzacji. Odbiory techniczne.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Listopad 2027 - Styczeń 2028</div>
+                            <div class="timeline-title">FAZA 7: Wyposażenie Pracowni</div>
+                            <p>Zakup maszyn szwalniczych, stołów krojczych, systemów przechowywania. Aranżacja wnętrza i zakup materiałów startowych.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Luty - Kwiecień 2028</div>
+                            <div class="timeline-title">FAZA 8: Legalizacja Działalności</div>
+                            <p>Rejestracja działalności gospodarczej, wybór formy opodatkowania, zgłoszenia w ZUS. Ubezpieczenie i pozwolenie na użytkowanie.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Maj - Październik 2028</div>
+                            <div class="timeline-title">FAZA 9: Uruchomienie i Marketing</div>
+                            <p>Strona internetowa, media społecznościowe, kampania marketingowa. Dzień otwarcia i pierwsze zamówienia. Rozwój działalności.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="budget" class="tab-content">
+            <div class="card">
+                <h2>Szacunkowy Budżet Projektu</h2>
+                
+                <h3>1. Zakup Nieruchomości</h3>
+                <div class="budget-item">
+                    <span class="budget-category">Zakup działki sąsiedniej (zależnie od lokalizacji i wielkości)</span>
+                    <span class="budget-amount">150 000 - 350 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Akt notarialny, podatki i opłaty</span>
+                    <span class="budget-amount">8 000 - 15 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Wycena rzeczoznawcy</span>
+                    <span class="budget-amount">1 000 - 2 000 zł</span>
+                </div>
+
+                <h3>2. Scalenie Działek</h3>
+                <div class="budget-item">
+                    <span class="budget-category">Usługi geodezyjne (mapa, projekt scalenia)</span>
+                    <span class="budget-amount">3 000 - 6 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Opłaty administracyjne, księgi wieczyste</span>
+                    <span class="budget-amount">500 - 1 000 zł</span>
+                </div>
+
+                <h3>3. Projekt i Pozwolenia</h3>
+                <div class="budget-item">
+                    <span class="budget-category">Projekt budowlany (jeśli wymagany)</span>
+                    <span class="budget-amount">3 000 - 8 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Zgłoszenie budowy / pozwolenie na budowę</span>
+                    <span class="budget-amount">500 - 2 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Warunki przyłączenia mediów</span>
+                    <span class="budget-amount">1 000 - 3 000 zł</span>
+                </div>
+
+                <h3>4. Budynek Modułowy / Kontener</h3>
+                <div class="budget-item">
+                    <span class="budget-category">Kontener/moduł 35m² (podstawowa wersja)</span>
+                    <span class="budget-amount">80 000 - 150 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Transport i montaż</span>
+                    <span class="budget-amount">5 000 - 12 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Fundamenty / płyta fundamentowa</span>
+                    <span class="budget-amount">8 000 - 15 000 zł</span>
+                </div>
+
+                <h3>5. Przyłącza i Instalacje</h3>
+                <div class="budget-item">
+                    <span class="budget-category">Przyłącze elektryczne</span>
+                    <span class="budget-amount">5 000 - 12 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Przyłącze wody i kanalizacji</span>
+                    <span class="budget-amount">8 000 - 18 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Instalacje wewnętrzne (elektryka, hydraulika)</span>
+                    <span class="budget-amount">12 000 - 20 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Klimatyzacja / ogrzewanie</span>
+                    <span class="budget-amount">8 000 - 15 000 zł</span>
+                </div>
+
+                <h3>6. Wyposażenie Pracowni</h3>
+                <div class="budget-item">
+                    <span class="budget-category">Maszyny szwalnicze (stebnówka, overlock, coverlock)</span>
+                    <span class="budget-amount">8 000 - 25 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Stoły krojcze, manekiny</span>
+                    <span class="budget-amount">4 000 - 8 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Żelazka, stacje prasujące</span>
+                    <span class="budget-amount">1 500 - 4 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Meble, regały, systemy przechowywania</span>
+                    <span class="budget-amount">6 000 - 12 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Narzędzia i akcesoria</span>
+                    <span class="budget-amount">3 000 - 6 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Meble warsztatowe dla dzieci</span>
+                    <span class="budget-amount">4 000 - 8 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Materiały startowe (tkaniny, akcesoria)</span>
+                    <span class="budget-amount">5 000 - 10 000 zł</span>
+                </div>
+
+                <h3>7. Zagospodarowanie Terenu</h3>
+                <div class="budget-item">
+                    <span class="budget-category">Dojazd, parking, ogrodzenie</span>
+                    <span class="budget-amount">10 000 - 25 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Zieleń, ogród</span>
+                    <span class="budget-amount">3 000 - 8 000 zł</span>
+                </div>
+
+                <h3>8. Administracja i Marketing</h3>
+                <div class="budget-item">
+                    <span class="budget-category">Rejestracja działalności, ubezpieczenia</span>
+                    <span class="budget-amount">2 000 - 4 000 zł</span>
+                </div>
+                <div class="budget-item">
+                    <span class="budget-category">Strona WWW, marketing, materiały promocyjne</span>
+                    <span class="budget-amount">3 000 - 8 000 zł</span>
+                </div>
+
+                <h3>9. Rezerwa (nieprzewidziane wydatki 10-15%)</h3>
+                <div class="budget-item">
+                    <span class="budget-category">Bufor bezpieczeństwa</span>
+                    <span class="budget-amount">40 000 - 70 000 zł</span>
+                </div>
+
+                <div class="budget-total">
+                    <span>BUDŻET CAŁKOWITY:</span>
+                    <span>450 000 - 750 000 zł</span>
+                </div>
+
+                <div style="margin-top: 24px; padding: 16px; background: var(--color-background); border-radius: var(--radius-base); line-height: 1.8;">
+                    <strong>Uwagi do budżetu:</strong>
+                    <ul style="margin-top: 12px; padding-left: 24px;">
+                        <li>Największą zmienną jest cena zakupu działki - zależy od lokalizacji, wielkości i stanu rynku</li>
+                        <li>Kontener/moduł do 35m² nie wymaga pełnego pozwolenia na budowę (tylko zgłoszenie)</li>
+                        <li>Budynki modułowe o wyższej jakości (z pełnym wykończeniem) mogą kosztować 120-180k zł</li>
+                        <li>Koszty przyłączy zależą od odległości od sieci</li>
+                        <li>Możliwość etapowania inwestycji - najpierw podstawowe wyposażenie, potem rozbudowa</li>
+                        <li>Rozważ finansowanie: kredyt hipoteczny na zakup działki + oszczędności/kredyt konsumpcyjny na budowę</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="notes" class="tab-content">
+            <div class="card">
+                <h2>Notatki Projektowe</h2>
+                <div class="notes-section">
+                    <textarea id="noteInput" class="note-input" placeholder="Dodaj notatkę, pomysł lub ważną informację..."></textarea>
+                    <button class="btn" onclick="addNote()" style="margin-top: 12px;">Dodaj Notatkę</button>
+                    <div id="notesList" style="margin-top: 24px;"></div>
+                </div>
+
+                <h3 style="margin-top: 32px;">Ważne Terminy i Przypomnienia</h3>
+                <div style="margin-top: 16px; padding: 16px; background: var(--color-background); border-radius: var(--radius-base); line-height: 1.8;">
+                    <ul style="padding-left: 24px;">
+                        <li><strong>PILNE:</strong> Decyzja o warunkach zabudowy - do końca 2025 r. obowiązuje uproszczona procedura!</li>
+                        <li>Księga wieczysta po scaleniu - pamiętaj o aktualizacji wszystkich dokumentów</li>
+                        <li>Pozwolenie na budowę (jeśli wymagane) - maksymalny termin rozpatrywania: 65 dni</li>
+                        <li>Działalność gospodarcza - możliwość ulgi na start w ZUS przez pierwsze 6 miesięcy</li>
+                        <li>Ubezpieczenie OC dla warsztatów z dziećmi - obowiązkowe przed rozpoczęciem zajęć</li>
+                    </ul>
+                </div>
+
+                <h3 style="margin-top: 32px;">Przydatne Kontakty</h3>
+                <div style="margin-top: 16px; padding: 16px; background: var(--color-background); border-radius: var(--radius-base); line-height: 1.8;">
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 12px;">📋 <strong>Starostwo Powiatowe:</strong> _________________</li>
+                        <li style="margin-bottom: 12px;">🏛️ <strong>Urząd Gminy:</strong> _________________</li>
+                        <li style="margin-bottom: 12px;">📐 <strong>Geodeta:</strong> _________________</li>
+                        <li style="margin-bottom: 12px;">🏗️ <strong>Architekt:</strong> _________________</li>
+                        <li style="margin-bottom: 12px;">🏢 <strong>Dostawca kontenerów:</strong> _________________</li>
+                        <li style="margin-bottom: 12px;">⚡ <strong>Zakład energetyczny:</strong> _________________</li>
+                        <li style="margin-bottom: 12px;">💧 <strong>Wodociągi:</strong> _________________</li>
+                        <li style="margin-bottom: 12px;">🔧 <strong>Ekipa budowlana:</strong> _________________</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Stan aplikacji
+        let tasks = {};
+        let notes = [];
+
+        // Inicjalizacja
+        document.addEventListener('DOMContentLoaded', function() {
+            initTabs();
+            initTasks();
+            loadNotes();
+            updateProgress();
+        });
+
+        // System zakładek
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+                    
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+        }
+
+        // System zadań
+        function initTasks() {
+            const taskItems = document.querySelectorAll('.task-item');
+            taskItems.forEach(item => {
+                const taskId = item.dataset.taskId;
+                tasks[taskId] = false;
+                
+                item.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('task-checkbox') || e.target.closest('.task-checkbox')) {
+                        toggleTask(taskId);
+                    }
+                });
+            });
+        }
+
+        function toggleTask(taskId) {
+            tasks[taskId] = !tasks[taskId];
+            const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
+            const checkbox = taskItem.querySelector('.task-checkbox');
+            
+            if (tasks[taskId]) {
+                taskItem.classList.add('completed');
+                checkbox.classList.add('checked');
+            } else {
+                taskItem.classList.remove('completed');
+                checkbox.classList.remove('checked');
+            }
+            
+            updateProgress();
+            saveToLocalStorage();
+        }
+
+        function updateProgress() {
+            const totalTasks = Object.keys(tasks).length;
+            const completedTasks = Object.values(tasks).filter(t => t).length;
+            const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            
+            const progressFill = document.getElementById('overallProgress');
+            const completedTasksEl = document.getElementById('completedTasks');
+            const totalTasksEl = document.getElementById('totalTasks');
+            
+            if (progressFill) {
+                progressFill.style.width = percentage + '%';
+                progressFill.textContent = percentage + '%';
+            }
+            
+            if (completedTasksEl) completedTasksEl.textContent = completedTasks;
+            if (totalTasksEl) totalTasksEl.textContent = totalTasks;
+        }
+
+        // System notatek
+        function addNote() {
+            const noteInput = document.getElementById('noteInput');
+            const noteText = noteInput.value.trim();
+            
+            if (noteText === '') return;
+            
+            const note = {
+                id: Date.now(),
+                text: noteText,
+                date: new Date().toLocaleString('pl-PL', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+            
+            notes.unshift(note);
+            noteInput.value = '';
+            renderNotes();
+            saveToLocalStorage();
+        }
+
+        function renderNotes() {
+            const notesList = document.getElementById('notesList');
+            if (!notesList) return;
+            
+            if (notes.length === 0) {
+                notesList.innerHTML = '<p style="color: var(--color-text-secondary); text-align: center; padding: 24px;">Brak notatek. Dodaj pierwszą notatkę powyżej.</p>';
+                return;
+            }
+            
+            notesList.innerHTML = notes.map(note => `
+                <div class="note-item">
+                    <div class="note-date">${note.date}</div>
+                    <div>${note.text}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadNotes() {
+            const saved = localStorage.getItem('projectNotes');
+            if (saved) {
+                notes = JSON.parse(saved);
+                renderNotes();
+            }
+        }
+
+        // Zapis do localStorage
+        function saveToLocalStorage() {
+            try {
+                // Zapisz tylko do zmiennych w pamięci - bez localStorage z powodu ograniczeń sandbox
+                // localStorage.setItem('projectTasks', JSON.stringify(tasks));
+                // localStorage.setItem('projectNotes', JSON.stringify(notes));
+            } catch (e) {
+                console.log('Dane przechowywane w sesji przeglądarki');
+            }
+        }
+
+        // Enter key w notatkach
+        document.addEventListener('keypress', function(e) {
+            if (e.target.id === 'noteInput' && e.key === 'Enter' && e.ctrlKey) {
+                addNote();
+            }
+        });
+    </script>
+</body>
+</html>
