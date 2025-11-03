@@ -486,7 +486,7 @@
 
             <div class="card">
                 <h2>Cel Projektu</h2>
-                <p><strong>Wizja:</strong> Stworzenie w pełni wyposażonej pracowni krawieckiej dla Patrycji (Uszyte przez Pati) , umożliwiającej prowadzenie działalności rękodzielniczej oraz warsztatów szwalniczych dla dzieci.</p>
+                <p><strong>Wizja:</strong> Stworzenie w pełni wyposażonej pracowni krawieckiej dla Patrycji (Uszyte przez Pati), umożliwiającej prowadzenie działalności rękodzielniczej oraz warsztatów szwalniczych dla dzieci.</p>
                 
                 <h3>Kluczowe Kroki</h3>
                 <ol style="padding-left: 24px; line-height: 1.8;">
@@ -1281,6 +1281,7 @@
         // Inicjalizacja
         document.addEventListener('DOMContentLoaded', function() {
             initTabs();
+            loadSavedTasks();
             initTasks();
             loadNotes();
             updateProgress();
@@ -1395,21 +1396,47 @@
         }
 
         function loadNotes() {
-            const saved = localStorage.getItem('projectNotes');
-            if (saved) {
-                notes = JSON.parse(saved);
-                renderNotes();
+            try {
+                const saved = localStorage.getItem('projectNotes');
+                if (saved) {
+                    notes = JSON.parse(saved);
+                    renderNotes();
+                }
+            } catch (e) {
+                console.log('Błąd wczytywania notatek:', e);
+                notes = [];
+            }
+        }
+
+        function loadSavedTasks() {
+            try {
+                const saved = localStorage.getItem('projectTasks');
+                if (saved) {
+                    const savedTasks = JSON.parse(saved);
+                    // Zastosuj zapisane stany zadań
+                    Object.keys(savedTasks).forEach(taskId => {
+                        tasks[taskId] = savedTasks[taskId];
+                        if (savedTasks[taskId]) {
+                            const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
+                            if (taskItem) {
+                                taskItem.classList.add('completed');
+                                taskItem.querySelector('.task-checkbox').classList.add('checked');
+                            }
+                        }
+                    });
+                }
+            } catch (e) {
+                console.log('Błąd wczytywania zadań:', e);
             }
         }
 
         // Zapis do localStorage
         function saveToLocalStorage() {
             try {
-                // Zapisz tylko do zmiennych w pamięci - bez localStorage z powodu ograniczeń sandbox
-                // localStorage.setItem('projectTasks', JSON.stringify(tasks));
-                // localStorage.setItem('projectNotes', JSON.stringify(notes));
+                localStorage.setItem('projectTasks', JSON.stringify(tasks));
+                localStorage.setItem('projectNotes', JSON.stringify(notes));
             } catch (e) {
-                console.log('Dane przechowywane w sesji przeglądarki');
+                console.log('Błąd zapisu danych:', e);
             }
         }
 
