@@ -1242,7 +1242,14 @@
                 <div class="notes-section">
                     <textarea id="noteInput" class="note-input" placeholder="Dodaj notatkę, pomysł lub ważną informację..."></textarea>
                     <button class="btn" onclick="addNote()" style="margin-top: 12px;">Dodaj Notatkę</button>
+                    
+                    <div style="margin: 24px 0; display: flex; gap: 12px; align-items: center;">
+                        <button class="tab" id="activeNotesTab" onclick="showActiveNotes()" style="background: var(--color-primary); color: white;">Aktywne Notatki</button>
+                        <button class="tab" id="archivedNotesTab" onclick="showArchivedNotes()">Archiwum (<span id="archiveCount">0</span>)</button>
+                    </div>
+                    
                     <div id="notesList" style="margin-top: 24px;"></div>
+                    <div id="archivedNotesList" style="margin-top: 24px; display: none;"></div>
                 </div>
 
                 <h3 style="margin-top: 32px;">Ważne Terminy i Przypomnienia</h3>
@@ -1323,6 +1330,7 @@
         // Stan aplikacji
         let tasks = {};
         let notes = [];
+        let archivedNotes = [];
 
         // Inicjalizacja
         document.addEventListener('DOMContentLoaded', function() {
@@ -1371,6 +1379,15 @@
                     renderNotes();
                 }
             });
+
+            // Nasłuchiwanie zmian zarchiwizowanych notatek
+            database.ref('archivedNotes').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    archivedNotes = data;
+                    renderArchivedNotes();
+                }
+            });
         }
 
         function saveToFirebase() {
@@ -1382,6 +1399,7 @@
             try {
                 database.ref('tasks').set(tasks);
                 database.ref('notes').set(notes);
+                database.ref('archivedNotes').set(archivedNotes);
             } catch (error) {
                 console.error('Błąd zapisu do Firebase:', error);
                 // Fallback na localStorage
@@ -1490,9 +1508,13 @@
             }
             
             notesList.innerHTML = notes.map(note => `
-                <div class="note-item">
+                <div class="note-item" style="position: relative; padding-right: 120px;">
                     <div class="note-date">${note.date}</div>
-                    <div>${note.text}</div>
+                    <div style="margin-bottom: 8px;">${note.text}</div>
+                    <div style="position: absolute; top: 12px; right: 12px; display: flex; gap: 8px;">
+                        <button onclick="archiveNote(${note.id})" class="btn-small" style="background: var(--color-orange-400); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Archiwizuj</button>
+                        <button onclick="deleteNote(${note.id})" class="btn-small" style="background: var(--color-red-400); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Usuń</button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -1500,21 +1522,31 @@
         function loadNotes() {
             try {
                 let saved = null;
+                let savedArchived = null;
                 // Próba odczytu z localStorage
                 try {
                     saved = localStorage.getItem('projectNotes');
+                    savedArchived = localStorage.getItem('projectArchivedNotes');
                 } catch (e) {
                     // Fallback na cookies
                     saved = getCookie('projectNotes');
+                    savedArchived = getCookie('projectArchivedNotes');
                 }
                 
                 if (saved) {
                     notes = JSON.parse(saved);
                     renderNotes();
                 }
+                
+                if (savedArchived) {
+                    archivedNotes = JSON.parse(savedArchived);
+                    renderArchivedNotes();
+                    updateArchiveCount();
+                }
             } catch (e) {
                 console.log('Błąd wczytywania notatek:', e);
                 notes = [];
+                archivedNotes = [];
             }
         }
 
@@ -1554,11 +1586,13 @@
                 // Próba zapisu do localStorage
                 localStorage.setItem('projectTasks', JSON.stringify(tasks));
                 localStorage.setItem('projectNotes', JSON.stringify(notes));
+                localStorage.setItem('projectArchivedNotes', JSON.stringify(archivedNotes));
             } catch (e) {
                 console.log('localStorage niedostępny, używam cookies:', e);
                 // Fallback na cookies (max 4KB per cookie)
                 setCookie('projectTasks', JSON.stringify(tasks), 365);
                 setCookie('projectNotes', JSON.stringify(notes), 365);
+                setCookie('projectArchivedNotes', JSON.stringify(archivedNotes), 365);
             }
         }
 
@@ -1588,6 +1622,104 @@
                 }
             }
             return null;
+        }
+
+        // Funkcje zarządzania notatkami
+        function deleteNote(noteId) {
+            if (confirm('Czy na pewno chcesz usunąć tę notatkę?')) {
+                notes = notes.filter(note => note.id !== noteId);
+                renderNotes();
+                saveToFirebase();
+            }
+        }
+
+        function archiveNote(noteId) {
+            const noteIndex = notes.findIndex(note => note.id === noteId);
+            if (noteIndex !== -1) {
+                const note = notes[noteIndex];
+                note.archivedDate = new Date().toLocaleString('pl-PL', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                archivedNotes.unshift(note);
+                notes.splice(noteIndex, 1);
+                renderNotes();
+                renderArchivedNotes();
+                updateArchiveCount();
+                saveToFirebase();
+            }
+        }
+
+        function restoreNote(noteId) {
+            const noteIndex = archivedNotes.findIndex(note => note.id === noteId);
+            if (noteIndex !== -1) {
+                const note = archivedNotes[noteIndex];
+                delete note.archivedDate;
+                notes.unshift(note);
+                archivedNotes.splice(noteIndex, 1);
+                renderNotes();
+                renderArchivedNotes();
+                updateArchiveCount();
+                saveToFirebase();
+            }
+        }
+
+        function deleteArchivedNote(noteId) {
+            if (confirm('Czy na pewno chcesz bezpowrotnie usunąć tę notatkę z archiwum?')) {
+                archivedNotes = archivedNotes.filter(note => note.id !== noteId);
+                renderArchivedNotes();
+                updateArchiveCount();
+                saveToFirebase();
+            }
+        }
+
+        function renderArchivedNotes() {
+            const archivedNotesList = document.getElementById('archivedNotesList');
+            if (!archivedNotesList) return;
+            
+            if (archivedNotes.length === 0) {
+                archivedNotesList.innerHTML = '<p style="color: var(--color-text-secondary); text-align: center; padding: 24px;">Archiwum jest puste.</p>';
+                return;
+            }
+            
+            archivedNotesList.innerHTML = archivedNotes.map(note => `
+                <div class="note-item" style="position: relative; padding-right: 120px; opacity: 0.8;">
+                    <div class="note-date">${note.date} → Archiwum: ${note.archivedDate}</div>
+                    <div style="margin-bottom: 8px;">${note.text}</div>
+                    <div style="position: absolute; top: 12px; right: 12px; display: flex; gap: 8px;">
+                        <button onclick="restoreNote(${note.id})" class="btn-small" style="background: var(--color-primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Przywróć</button>
+                        <button onclick="deleteArchivedNote(${note.id})" class="btn-small" style="background: var(--color-red-400); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Usuń</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showActiveNotes() {
+            document.getElementById('notesList').style.display = 'block';
+            document.getElementById('archivedNotesList').style.display = 'none';
+            document.getElementById('activeNotesTab').style.background = 'var(--color-primary)';
+            document.getElementById('activeNotesTab').style.color = 'white';
+            document.getElementById('archivedNotesTab').style.background = 'transparent';
+            document.getElementById('archivedNotesTab').style.color = 'var(--color-text-secondary)';
+        }
+
+        function showArchivedNotes() {
+            document.getElementById('notesList').style.display = 'none';
+            document.getElementById('archivedNotesList').style.display = 'block';
+            document.getElementById('activeNotesTab').style.background = 'transparent';
+            document.getElementById('activeNotesTab').style.color = 'var(--color-text-secondary)';
+            document.getElementById('archivedNotesTab').style.background = 'var(--color-primary)';
+            document.getElementById('archivedNotesTab').style.color = 'white';
+        }
+
+        function updateArchiveCount() {
+            const archiveCountEl = document.getElementById('archiveCount');
+            if (archiveCountEl) {
+                archiveCountEl.textContent = archivedNotes.length;
+            }
         }
 
         // Enter key w notatkach
