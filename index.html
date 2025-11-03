@@ -1397,7 +1397,15 @@
 
         function loadNotes() {
             try {
-                const saved = localStorage.getItem('projectNotes');
+                let saved = null;
+                // Próba odczytu z localStorage
+                try {
+                    saved = localStorage.getItem('projectNotes');
+                } catch (e) {
+                    // Fallback na cookies
+                    saved = getCookie('projectNotes');
+                }
+                
                 if (saved) {
                     notes = JSON.parse(saved);
                     renderNotes();
@@ -1410,7 +1418,15 @@
 
         function loadSavedTasks() {
             try {
-                const saved = localStorage.getItem('projectTasks');
+                let saved = null;
+                // Próba odczytu z localStorage
+                try {
+                    saved = localStorage.getItem('projectTasks');
+                } catch (e) {
+                    // Fallback na cookies
+                    saved = getCookie('projectTasks');
+                }
+                
                 if (saved) {
                     const savedTasks = JSON.parse(saved);
                     // Zastosuj zapisane stany zadań
@@ -1430,14 +1446,46 @@
             }
         }
 
-        // Zapis do localStorage
+        // Zapis do localStorage z fallback na cookies
         function saveToLocalStorage() {
             try {
+                // Próba zapisu do localStorage
                 localStorage.setItem('projectTasks', JSON.stringify(tasks));
                 localStorage.setItem('projectNotes', JSON.stringify(notes));
             } catch (e) {
-                console.log('Błąd zapisu danych:', e);
+                console.log('localStorage niedostępny, używam cookies:', e);
+                // Fallback na cookies (max 4KB per cookie)
+                setCookie('projectTasks', JSON.stringify(tasks), 365);
+                setCookie('projectNotes', JSON.stringify(notes), 365);
             }
+        }
+
+        // Funkcje pomocnicze dla cookies
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + date.toUTCString();
+            // Kompresja danych przed zapisem
+            const compressed = btoa(encodeURIComponent(value));
+            document.cookie = name + "=" + compressed + ";" + expires + ";path=/;SameSite=Lax";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    try {
+                        const compressed = c.substring(nameEQ.length, c.length);
+                        return decodeURIComponent(atob(compressed));
+                    } catch (e) {
+                        return null;
+                    }
+                }
+            }
+            return null;
         }
 
         // Enter key w notatkach
